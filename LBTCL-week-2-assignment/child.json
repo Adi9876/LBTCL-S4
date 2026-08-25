@@ -1,0 +1,17 @@
+{
+   "txid": "b267161745bab0774d5ddd9bd1dc295e0ce4405f8d79059a0c832092b51f9a15",
+   "input": [
+      {
+         "txid": "6f7fec0af44866e00fd5200e7cc187e706ab6043fd0f030900bbdedf912648f4",
+         "vout": 1
+      }
+   ],
+   "output": [
+      {
+         "scriptpubkey": "0014f4dce7f3a95d7efc2c14ff2769bb1d35e3c3f4af",
+         "amount": 29.99998
+      }
+   ],
+   "fee": 1e-05,
+   "weight": 437
+}
