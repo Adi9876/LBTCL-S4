@@ -35,6 +35,7 @@ def main():
         trader_client = AuthServiceProxy(f"{base_rpc_url}/wallet/Trader")
 
         # Generate spendable balances in the Miner wallet. Determine how many blocks need to be mined.
+        # Coinbase outputs require 100 confirmations to mature (BIP 34) before becoming spendable.
         miner_address = miner_client.getnewaddress("Mining Reward")
         client.generatetoaddress(101, miner_address)
         print("Miner balance:", miner_client.getbalance())
@@ -42,8 +43,34 @@ def main():
         # Load the Trader wallet and generate a new address.
         trader_address = trader_client.getnewaddress("Received")
 
+        # Select 1 mature UTXO > 20 BTC to guarantee exactly 1 vin and 2 vouts (Trader + change)
+        unspent = miner_client.listunspent()
+        candidate = None
+        for u in unspent:
+            if u["spendable"] and u["amount"] >= 50:
+                candidate = u
+                break
+        if not candidate:
+            for u in unspent:
+                if u["spendable"] and u["amount"] > 20:
+                    candidate = u
+                    break
+
+        to_lock = []
+        if candidate:
+            to_lock = [
+                {"txid": u["txid"], "vout": u["vout"]}
+                for u in unspent
+                if not (u["txid"] == candidate["txid"] and u["vout"] == candidate["vout"])
+            ]
+            if to_lock:
+                miner_client.lockunspent(False, to_lock)
+
         # Send 20 BTC from Miner to Trader.
         txid = miner_client.sendtoaddress(trader_address, 20)
+
+        if to_lock:
+            miner_client.lockunspent(True, to_lock)
 
         # Check the transaction in the mempool.
         mempool_entry = client.getmempoolentry(txid)
