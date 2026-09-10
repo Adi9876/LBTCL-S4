@@ -48,7 +48,7 @@ def main():
         alice_addr = alice.getnewaddress()
         miner.sendtoaddress(alice_addr, 20.0)
         miner.generatetoaddress(6, miner_addr)
-        print("alice balance funds aftr:", alice.getbalance())
+        # print("alice balance funds aftr:", alice.getbalance())
 
         # Create refund transaction where Alice pays 10 BTC to Miner
         # Additionally, add a relative timelock of 10 blocks
