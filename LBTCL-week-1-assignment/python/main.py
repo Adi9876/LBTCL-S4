@@ -22,7 +22,6 @@ def main():
             try:
                 client.createwallet(name)
             except JSONRPCException as e:
-                # 103 means it's already created but not loaded? Wait, let's just try loading.
                 try:
                     client.loadwallet(name)
                 except JSONRPCException:
@@ -35,7 +34,7 @@ def main():
         trader_client = AuthServiceProxy(f"{base_rpc_url}/wallet/Trader")
 
         # Generate spendable balances in the Miner wallet. Determine how many blocks need to be mined.
-        # Coinbase outputs require 100 confirmations to mature (BIP 34) before becoming spendable.
+        # Coinbase outputs require 100 confirmations to mature before becoming spendable.
         miner_address = miner_client.getnewaddress("Mining Reward")
         client.generatetoaddress(101, miner_address)
         print("Miner balance:", miner_client.getbalance())
